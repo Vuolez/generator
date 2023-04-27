@@ -1,6 +1,6 @@
 package com.gamedev.generator.util;
 
-import com.gamedev.generator.model.DrawPanel;
+import com.gamedev.generator.model.draw.DrawPanel;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;

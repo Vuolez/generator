@@ -1,4 +1,4 @@
-package com.gamedev.generator.model;
+package com.gamedev.generator.model.draw;
 
 
 import javax.swing.*;

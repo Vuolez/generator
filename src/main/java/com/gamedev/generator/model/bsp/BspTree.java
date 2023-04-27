@@ -1,4 +1,4 @@
-package com.gamedev.generator.model;
+package com.gamedev.generator.model.bsp;
 
 import lombok.Getter;
 import org.springframework.stereotype.Component;
@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import java.util.Vector;
 
 @Component
-public class BspMap {
+public class BspTree {
 
     // Константа для максимального размера листа
     private final int MAX_LEAF_SIZE = 20;
@@ -34,7 +34,7 @@ public class BspMap {
                 // Если этот лист еще не разделен...
                 if (l.leftChild == null && l.rightChild == null) {
                     // Если этот лист слишком большой или есть 75% шанс...
-                    if (l.maxWidth > MAX_LEAF_SIZE || l.maxHeight > MAX_LEAF_SIZE || Math.random() > 0.25) {
+                    if (l.width > MAX_LEAF_SIZE || l.height > MAX_LEAF_SIZE || Math.random() > 0.25) {
                         // Разделить лист!
                         if (l.split()) {
                             // Если разделение прошло успешно, добавить дочерние листы в вектор
@@ -46,7 +46,13 @@ public class BspMap {
                 }
             }
         }
+    }
 
-        root.createRooms();
+    public BspLeaf getRootLeaf() {
+        if(leafs.get(0) != null){
+            return leafs.get(0);
+        }
+
+        return null;
     }
 }
