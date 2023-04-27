@@ -3,6 +3,7 @@ package com.gamedev.generator;
 import com.gamedev.generator.model.MapGraph;
 import com.gamedev.generator.model.Room;
 import com.gamedev.generator.service.BspService;
+import com.gamedev.generator.service.MapGraphService;
 import com.gamedev.generator.util.BspUtil;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -40,7 +41,7 @@ public class GeneratorApplication extends JFrame {
         Graphics2D g2d = (Graphics2D) g;
 
 
-        BspService bspService = new BspService(new BspUtil());
+        MapGraphService mapGraphService = new MapGraphService(new BspService(new BspUtil()));
 //		BspMap bspMap = bspService.createBspMap(100, 100);
 //
 //		for(BspLeaf leaf : bspMap.getLeafs()){
@@ -62,7 +63,7 @@ public class GeneratorApplication extends JFrame {
 //			}
 //		}
 
-        MapGraph map = bspService.createMap(100, 100);
+        MapGraph map = mapGraphService.createBspMap(100, 100);
 
         for (Room room : map.getRooms()) {
             g2d.setColor(new Color(0, 0, 0));
