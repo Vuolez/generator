@@ -1,21 +1,21 @@
 package com.gamedev.generator.model.bsp;
 
 import com.gamedev.generator.model.Node;
+import lombok.Getter;
+
+import java.awt.*;
 
 public class BspLeaf extends Node {
 
     private final Integer MIN_LEAF_SIZE = 15;
-    public Integer y, x, width, height;
 
-    public BspLeaf leftChild;
-    public BspLeaf rightChild;
+    @Getter
+    private BspLeaf leftChild;
+    @Getter
+    private BspLeaf rightChild;
 
-    public BspLeaf(int X, int Y, int width, int height) {
-        x = X;
-        y = Y;
-        this.width = width;
-        this.height = height;
-
+    public BspLeaf(Rectangle bound) {
+        super(bound);
     }
 
 
@@ -30,14 +30,14 @@ public class BspLeaf extends Node {
         // if the height is >25% larger than the width, we split horizontally
         // otherwise we split randomly
         boolean splitH = Math.random() > 0.5;
-        if (width > height && width / height >= 1.25) {
+        if (getBound().width > getBound().height && getBound().width / getBound().height >= 1.25) {
             splitH = false;
-        } else if (height > width && height / width >= 1.25) {
+        } else if (getBound().height > getBound().width && getBound().height / getBound().width >= 1.25) {
             splitH = true;
         }
 
         // Determine the maximum height or width for splitting
-        int max = (splitH ? height : width) - MIN_LEAF_SIZE;
+        int max = (splitH ? getBound().height : getBound().width) - MIN_LEAF_SIZE;
         // If the area is too small to split any more, return false
         if (max <= MIN_LEAF_SIZE) {
             return false;
@@ -46,22 +46,14 @@ public class BspLeaf extends Node {
         int split = (int) (Math.random() * (max - MIN_LEAF_SIZE)) + MIN_LEAF_SIZE;
         // Create left and right child leaves based on the direction of the split
         if (splitH) {
-            leftChild = new BspLeaf(x, y, width, split);
-            rightChild = new BspLeaf(x, y + split, width, height - split);
+            leftChild = new BspLeaf(new Rectangle(getBound().x, getBound().y, getBound().width, split));
+            rightChild = new BspLeaf(new Rectangle(getBound().x, getBound().y + split, getBound().width, getBound().height - split));
         } else {
-            leftChild = new BspLeaf(x, y, split, height);
-            rightChild = new BspLeaf(x + split, y, width - split, height);
+            leftChild = new BspLeaf(new Rectangle(getBound().x, getBound().y, split, getBound().height));
+            rightChild = new BspLeaf(new Rectangle(getBound().x + split, getBound().y, getBound().width - split, getBound().height));
         }
         // Split successful
         return true;
     }
 
-    public int getCenterX() {
-        return x + (width / 2);
-    }
-
-
-    public int getCenterY() {
-        return y + (height / 2);
-    }
 }

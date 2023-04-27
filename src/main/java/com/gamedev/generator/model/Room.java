@@ -12,13 +12,11 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Room extends Node{
-    Rectangle bound;
+public class Room extends Node {
     Rectangle content;
-    List<Room> connectedRooms;
 
-    public Room(Rectangle bound, Rectangle content){
-        this.bound = bound;
+    public Room(Rectangle bound, Rectangle content) {
+        super(bound);
         this.content = content;
     }
 }

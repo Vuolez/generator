@@ -1,10 +1,11 @@
 package com.gamedev.generator;
 
 import com.gamedev.generator.model.MapGraph;
-import com.gamedev.generator.model.Room;
+import com.gamedev.generator.model.Node;
 import com.gamedev.generator.service.BspService;
 import com.gamedev.generator.service.MapGraphService;
 import com.gamedev.generator.util.BspUtil;
+import com.gamedev.generator.util.NodeUtil;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.swing.*;
@@ -41,7 +42,7 @@ public class GeneratorApplication extends JFrame {
         Graphics2D g2d = (Graphics2D) g;
 
 
-        MapGraphService mapGraphService = new MapGraphService(new BspService(new BspUtil()));
+        MapGraphService mapGraphService = new MapGraphService(new BspService(new BspUtil()), new NodeUtil());
 //		BspMap bspMap = bspService.createBspMap(100, 100);
 //
 //		for(BspLeaf leaf : bspMap.getLeafs()){
@@ -65,14 +66,19 @@ public class GeneratorApplication extends JFrame {
 
         MapGraph map = mapGraphService.createBspMap(100, 100);
 
-        for (Room room : map.getRooms()) {
+        for (Node room : map.getRooms()) {
             g2d.setColor(new Color(0, 0, 0));
             g2d.drawRect(room.getBound().x * scale, room.getBound().y * scale
                     , room.getBound().width * scale, room.getBound().height * scale);
 
             g2d.setColor(new Color(255, 0, 0));
-            g2d.drawRect(room.getContent().x * scale, room.getContent().y * scale
-					, room.getContent().width * scale, room.getContent().height * scale);
+            for (Node node : room.getConnected()) {
+                g2d.drawLine(room.getCenterX() * scale, room.getCenterY() * scale, node.getCenterX() * scale, node.getCenterY() * scale);
+            }
+
+//            g2d.setColor(new Color(255, 0, 0));
+//            g2d.drawRect(room.getContent().x * scale, room.getContent().y * scale
+//					, room.getContent().width * scale, room.getContent().height * scale);
         }
 
     }

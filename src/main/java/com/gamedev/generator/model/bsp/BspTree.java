@@ -1,9 +1,12 @@
 package com.gamedev.generator.model.bsp;
 
+import com.gamedev.generator.model.Node;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-import java.util.Vector;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class BspTree {
@@ -13,14 +16,14 @@ public class BspTree {
 
     // Вектор для хранения всех листьев
     @Getter
-    private Vector<BspLeaf> leafs = new Vector<BspLeaf>();
+    private List<Node> leafs = new ArrayList<>();
 
     // Вспомогательный лист
     private BspLeaf l;
 
     public void create(Integer maxWidth, Integer maxHeight) {
         // Создание корневого листа
-        BspLeaf root = new BspLeaf(0, 0, maxWidth, maxHeight);
+        BspLeaf root = new BspLeaf(new Rectangle(0, 0, maxWidth, maxHeight));
         leafs.add(root);
 
         // Переменная для проверки успешности разделения
@@ -30,16 +33,16 @@ public class BspTree {
         while (did_split) {
             did_split = false;
             for (int i = 0; i < leafs.size(); i++) {
-                l = leafs.get(i);
+                l = (BspLeaf) leafs.get(i);
                 // Если этот лист еще не разделен...
-                if (l.leftChild == null && l.rightChild == null) {
+                if (l.getLeftChild() == null && l.getRightChild() == null) {
                     // Если этот лист слишком большой или есть 75% шанс...
-                    if (l.width > MAX_LEAF_SIZE || l.height > MAX_LEAF_SIZE || Math.random() > 0.25) {
+                    if (l.getBound().getWidth() > MAX_LEAF_SIZE || l.getBound().getHeight() > MAX_LEAF_SIZE || Math.random() > 0.25) {
                         // Разделить лист!
                         if (l.split()) {
                             // Если разделение прошло успешно, добавить дочерние листы в вектор
-                            leafs.add(l.leftChild);
-                            leafs.add(l.rightChild);
+                            leafs.add(l.getLeftChild());
+                            leafs.add(l.getRightChild());
                             did_split = true;
                         }
                     }
@@ -49,8 +52,8 @@ public class BspTree {
     }
 
     public BspLeaf getRootLeaf() {
-        if(leafs.get(0) != null){
-            return leafs.get(0);
+        if (leafs.get(0) != null) {
+            return (BspLeaf) leafs.get(0);
         }
 
         return null;

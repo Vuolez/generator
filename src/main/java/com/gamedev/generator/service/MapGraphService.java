@@ -2,10 +2,12 @@ package com.gamedev.generator.service;
 
 
 import com.gamedev.generator.model.MapGraph;
+import com.gamedev.generator.model.Node;
 import com.gamedev.generator.model.Room;
 import com.gamedev.generator.model.bsp.BspLeaf;
 import com.gamedev.generator.model.bsp.BspTree;
 import com.gamedev.generator.util.MathUtil;
+import com.gamedev.generator.util.NodeUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,12 +24,14 @@ public class MapGraphService {
     private static Integer ROOM_WIDTH_RANGE = 5;
     private static Integer ROOM_HEIGHT_RANGE = 5;
     BspService bspService;
+    NodeUtil nodeUtil;
     public MapGraph createBspMap(Integer width, Integer height){
-        BspTree bspTree = bspService.createBspTree(width, height);
-
-
         MapGraph map = new MapGraph();
-        map.setRooms(createRooms(bspTree.getRootLeaf()));
+
+        List<Node> leafs = bspService.createMap(width, height);
+        nodeUtil.connectOverlappingNodes(leafs);
+
+        map.setRooms(leafs);
 
         return map;
     }
@@ -40,8 +44,8 @@ public class MapGraphService {
     }
 
     private void createRoomsRecursive(BspLeaf leaf, List<Room> rooms){
-        BspLeaf leftChild = leaf.leftChild;
-        BspLeaf rightChild = leaf.rightChild;
+        BspLeaf leftChild = leaf.getLeftChild();
+        BspLeaf rightChild = leaf.getRightChild();
 
         // Если лист разделен, перейти в дочерние листы
         if (leftChild != null || rightChild != null) {
@@ -57,14 +61,14 @@ public class MapGraphService {
             Point roomPos;
 
             // Размер комнаты может быть от 3x3 до размеров листа минус 2
-            roomSize = new Point(MathUtil.getRandIntInRange(leaf.width - ROOM_WIDTH_RANGE, leaf.width)
-                    , MathUtil.getRandIntInRange(leaf.height - ROOM_HEIGHT_RANGE, leaf.height));
+            roomSize = new Point(MathUtil.getRandIntInRange((int) (leaf.getBound().getWidth() - ROOM_WIDTH_RANGE), (int) leaf.getBound().getWidth())
+                    , MathUtil.getRandIntInRange((int) (leaf.getBound().getHeight() - ROOM_HEIGHT_RANGE), (int) leaf.getBound().getHeight()));
 
             // Расположение комнаты внутри листа
-            roomPos = new Point(MathUtil.getRandIntInRange(0,leaf.width - roomSize.x)
-                    , MathUtil.getRandIntInRange(0,leaf.height - roomSize.y));
-            Room room = new Room(new Rectangle(leaf.x, leaf.y, leaf.width, leaf.height)
-                    ,new Rectangle(leaf.x + roomPos.x, leaf. y + roomPos.y, roomSize.x, roomSize.y));
+            roomPos = new Point(MathUtil.getRandIntInRange(0, (int) (leaf.getBound().getWidth() - roomSize.x))
+                    , MathUtil.getRandIntInRange(0, (int) (leaf.getBound().getHeight() - roomSize.y)));
+            Room room = new Room(new Rectangle((int) leaf.getBound().getX(), (int) leaf.getBound().getY(), (int) leaf.getBound().getWidth(), leaf.getBound().height)
+                    ,new Rectangle((int) (leaf.getBound().getX() + roomPos.x), (int) (leaf.getBound().getY() + roomPos.y), roomSize.x, roomSize.y));
 
             rooms.add(room);
         }

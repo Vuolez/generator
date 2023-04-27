@@ -1,5 +1,6 @@
 package com.gamedev.generator.util;
 
+import com.gamedev.generator.model.Node;
 import com.gamedev.generator.model.bsp.BspLeaf;
 import com.gamedev.generator.model.bsp.BspTree;
 import lombok.AccessLevel;
@@ -22,24 +23,24 @@ public class BspUtil {
         return bspTree;
     }
 
-    public List<BspLeaf> getLastLeafs(BspLeaf currenLeaf){
-        List<BspLeaf> lastLeafs = new ArrayList<>();
-        getLastLeafListRecursive(currenLeaf, lastLeafs);
+    public List<Node> getLastLeafs(BspLeaf rootLeaf){
+        List<Node> lastLeafs = new ArrayList<>();
+        getLastLeafListRecursive(rootLeaf, lastLeafs);
 
         return lastLeafs;
     }
 
-    private void getLastLeafListRecursive(BspLeaf currenLeaf, List<BspLeaf> lastLeafs){
-        if(currenLeaf.leftChild == null && currenLeaf.rightChild == null){
+    private void getLastLeafListRecursive(BspLeaf currenLeaf, List<Node> lastLeafs){
+        if(currenLeaf.getLeftChild() == null && currenLeaf.getRightChild() == null){
             lastLeafs.add(currenLeaf);
             return;
         }
 
-        if(currenLeaf.leftChild != null){
-            getLastLeafListRecursive(currenLeaf.leftChild, lastLeafs);
+        if(currenLeaf.getLeftChild() != null){
+            getLastLeafListRecursive(currenLeaf.getLeftChild(), lastLeafs);
         }
-        if(currenLeaf.rightChild != null){
-            getLastLeafListRecursive(currenLeaf.rightChild, lastLeafs);
+        if(currenLeaf.getRightChild() != null){
+            getLastLeafListRecursive(currenLeaf.getRightChild(), lastLeafs);
         }
     }
 }
