@@ -1,10 +1,10 @@
 package com.gamedev.generator.model.bsp;
 
 import com.gamedev.generator.model.Node;
+import com.gamedev.generator.model.Rectangle;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +23,7 @@ public class BspTree {
 
     public void create(Integer maxWidth, Integer maxHeight) {
         // Создание корневого листа
-        BspLeaf root = new BspLeaf(new Rectangle(0, 0, maxWidth, maxHeight));
+        BspLeaf root = new BspLeaf(new Rectangle(20, 20, maxWidth, maxHeight));
         leafs.add(root);
 
         // Переменная для проверки успешности разделения

@@ -3,6 +3,7 @@ package com.gamedev.generator.service;
 
 import com.gamedev.generator.model.MapGraph;
 import com.gamedev.generator.model.Node;
+import com.gamedev.generator.model.Rectangle;
 import com.gamedev.generator.model.Room;
 import com.gamedev.generator.model.bsp.BspLeaf;
 import com.gamedev.generator.model.bsp.BspTree;
@@ -67,8 +68,8 @@ public class MapGraphService {
             // Расположение комнаты внутри листа
             roomPos = new Point(MathUtil.getRandIntInRange(0, (int) (leaf.getBound().getWidth() - roomSize.x))
                     , MathUtil.getRandIntInRange(0, (int) (leaf.getBound().getHeight() - roomSize.y)));
-            Room room = new Room(new Rectangle((int) leaf.getBound().getX(), (int) leaf.getBound().getY(), (int) leaf.getBound().getWidth(), leaf.getBound().height)
-                    ,new Rectangle((int) (leaf.getBound().getX() + roomPos.x), (int) (leaf.getBound().getY() + roomPos.y), roomSize.x, roomSize.y));
+            Room room = new Room(new Rectangle(leaf.getBound().getX(),leaf.getBound().getY(), leaf.getBound().getWidth(), leaf.getBound().getHeight())
+                    ,new Rectangle(leaf.getBound().getX() + roomPos.x, leaf.getBound().getY() + roomPos.y, roomSize.x, roomSize.y));
 
             rooms.add(room);
         }
