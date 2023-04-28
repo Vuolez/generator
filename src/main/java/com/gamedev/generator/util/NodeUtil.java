@@ -8,8 +8,9 @@ import java.util.List;
 public class NodeUtil {
     public void connectOverlappingNodes(List<Node> nodes) {
         for (int i = 0; i < nodes.size(); ++i) {
-            for (int j = i + 1; j < nodes.size(); ++j) {
-                if(nodes.get(i).isOverlaping(nodes.get(j))){
+            for (int j = 0; j < nodes.size(); ++j) {
+                if (nodes.get(i) != nodes.get(j)
+                        && nodes.get(i).isOverlapingWithThreshold(nodes.get(j), 2)) {
                     nodes.get(i).getConnected().add(nodes.get(j));
                 }
             }
