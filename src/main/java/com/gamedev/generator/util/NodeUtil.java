@@ -11,7 +11,7 @@ public class NodeUtil {
         for (int i = 0; i < nodes.size(); ++i) {
             for (int j = 0; j < nodes.size(); ++j) {
                 if (nodes.get(i) != nodes.get(j)) {
-                    Edge overlappingEdge = nodes.get(i).isOverlapingWithThreshold(nodes.get(j), 1);
+                    Edge overlappingEdge = nodes.get(i).isOverlapingWithThreshold(nodes.get(j), 5);
 
                     if (overlappingEdge != null) {
 

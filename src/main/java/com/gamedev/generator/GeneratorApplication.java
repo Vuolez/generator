@@ -47,7 +47,7 @@ public class GeneratorApplication extends JFrame {
 
         MapGraph map = mapGraphService.createBspMap(100, 100, g2d);
 
-        for(int i = 0; i < map.getRooms().size(); ++i){
+        for (int i = 0; i < map.getRooms().size(); ++i) {
 
             Node room = map.getRooms().get(i);
 
@@ -57,15 +57,17 @@ public class GeneratorApplication extends JFrame {
                     , room.getBound().getWidth() * scale, room.getBound().getHeight() * scale);
 
 
-            g2d.setColor(new Color(MathUtil.getRandIntInRange(0,255), MathUtil.getRandIntInRange(0,255), MathUtil.getRandIntInRange(0,255)));
+            g2d.setColor(new Color(MathUtil.getRandIntInRange(0, 255), MathUtil.getRandIntInRange(0, 255), MathUtil.getRandIntInRange(0, 255)));
             g2d.setStroke(new BasicStroke(3));
             for (Edge hall : room.getHalls()) {
                 g2d.drawLine(hall.getX1() * scale, hall.getY1() * scale, hall.getX2() * scale, hall.getY2() * scale);
             }
 
-            int x = 0;
-            System.out.println(x);
-
+            g2d.setColor(new Color(255,0,0));
+            g2d.setStroke(new BasicStroke(2));
+            for (Node con : room.getConnected()) {
+                g2d.drawLine(room.getCenterX() * scale, room.getCenterY() * scale, con.getCenterX() * scale, con.getCenterY() * scale);
+            }
         }
     }
 
