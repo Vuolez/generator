@@ -10,7 +10,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Edge {
-    Integer x1, y1, x2, y2;
+    int x1, y1, x2, y2;
 
     public Edge(Edge other) {
         this.x1 = other.x1;
@@ -24,37 +24,49 @@ public class Edge {
             return null;
         }
 
+        Edge edge = new Edge();
+
         if (equals(other)) {
-            return new Edge(this);
+            edge = new Edge(this);
         }
 
         //если линии лежат вертикально на одной прямой
         else if (isCollinearityX(other) && !(y1 < other.y1 && y2 <= other.y1) && !(y1 >= other.y2 && y2 > other.y2)) {
-            if (y1 < other.y2 && y2 > other.y2) {
-                return new Edge(x1, y1, other.x2, other.y2);
-            } else if (y1 < other.y2 && y2 < other.y2) {
-                return new Edge(x1, y1, x2, y2);
+            if (y1 < other.y2 && y2 >= other.y2) {
+                edge = new Edge(x1, y1, other.x2, other.y2);
             } else if (y1 < other.y1 && y2 > other.y1) {
-                return new Edge(other.x1, other.y1, x2, y2);
+                edge = new Edge(other.x1, other.y1, x2, y2);
             } else if (y1 < other.y1 && y2 > other.y2) {
-                return new Edge(other.x1, other.y1, other.x2, other.y2);
+                edge = new Edge(other.x1, other.y1, other.x2, other.y2);
+            } else if (y1 < other.y2 && y2 < other.y2) {
+                edge = new Edge(x1, y1, x2, y2);
             }
         }
 
         //если линии лежат горизонтально на одной прямой
         else if (isCollinearityY(other) && !(x1 < other.x1 && x2 <= other.x1) && !(x1 >= other.x2 && x2 > other.x2)) {
-            if (x1 < other.x2 && x2 > other.x2) {
-                return new Edge(x1, y1, other.x2, other.y2);
-            } else if (x1 < other.x2 && x2 < other.x2) {
-                return new Edge(x1, y1, x2, y2);
+            if (x1 < other.x2 && x2 >= other.x2) {
+                edge = new Edge(x1, y1, other.x2, other.y2);
             } else if (x1 < other.x1 && x2 > other.x1) {
-                return new Edge(other.x1, other.y1, x2, y2);
+                edge = new Edge(other.x1, other.y1, x2, y2);
             } else if (x1 < other.x1 && x2 > other.x2) {
-                return new Edge(other.x1, other.y1, other.x2, other.y2);
+                edge = new Edge(other.x1, other.y1, other.x2, other.y2);
+            } else if (x1 < other.x2 && x2 < other.x2) {
+                edge = new Edge(x1, y1, x2, y2);
             }
         }
 
-        return null;
+        var x = edge.length();
+        System.out.println(x);
+
+        var y = edge.length();
+        System.out.println(y);
+
+        return (edge.length() > 0 && edge.length() >= threshold) ? edge : null;
+    }
+
+    public double length() {
+        return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
     public boolean isCollinearityX(Edge other) {

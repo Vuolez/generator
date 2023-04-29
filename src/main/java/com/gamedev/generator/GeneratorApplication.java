@@ -6,6 +6,7 @@ import com.gamedev.generator.model.Node;
 import com.gamedev.generator.service.BspService;
 import com.gamedev.generator.service.MapGraphService;
 import com.gamedev.generator.util.BspUtil;
+import com.gamedev.generator.util.MathUtil;
 import com.gamedev.generator.util.NodeUtil;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -42,25 +43,30 @@ public class GeneratorApplication extends JFrame {
     void drawRectangles(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
 
-
         MapGraphService mapGraphService = new MapGraphService(new BspService(new BspUtil()), new NodeUtil());
 
-        MapGraph map = mapGraphService.createBspMap(100, 100);
+        MapGraph map = mapGraphService.createBspMap(100, 100, g2d);
 
-        for (Node room : map.getRooms()) {
+        for(int i = 0; i < map.getRooms().size(); ++i){
+
+            Node room = map.getRooms().get(i);
+
             g2d.setStroke(new BasicStroke(1));
             g2d.setColor(new Color(0, 0, 0));
             g2d.drawRect(room.getBound().getX() * scale, room.getBound().getY() * scale
                     , room.getBound().getWidth() * scale, room.getBound().getHeight() * scale);
 
 
-            g2d.setColor(new Color(255, 0, 0));
+            g2d.setColor(new Color(MathUtil.getRandIntInRange(0,255), MathUtil.getRandIntInRange(0,255), MathUtil.getRandIntInRange(0,255)));
             g2d.setStroke(new BasicStroke(3));
             for (Edge hall : room.getHalls()) {
                 g2d.drawLine(hall.getX1() * scale, hall.getY1() * scale, hall.getX2() * scale, hall.getY2() * scale);
             }
-        }
 
+            int x = 0;
+            System.out.println(x);
+
+        }
     }
 
     public void paint(Graphics g) {

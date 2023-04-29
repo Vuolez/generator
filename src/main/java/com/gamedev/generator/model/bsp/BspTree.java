@@ -23,7 +23,7 @@ public class BspTree {
 
     public void create(Integer maxWidth, Integer maxHeight) {
         // Создание корневого листа
-        BspLeaf root = new BspLeaf(new Rectangle(20, 20, maxWidth, maxHeight));
+        BspLeaf root = new BspLeaf(new Rectangle(0, 0, maxWidth, maxHeight));
         leafs.add(root);
 
         // Переменная для проверки успешности разделения
