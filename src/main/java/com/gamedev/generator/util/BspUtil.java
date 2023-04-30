@@ -23,14 +23,14 @@ public class BspUtil {
         return bspTree;
     }
 
-    public List<Node> getLastLeafs(BspLeaf rootLeaf){
-        List<Node> lastLeafs = new ArrayList<>();
+    public List<BspLeaf> getLastLeafs(BspLeaf rootLeaf){
+        List<BspLeaf> lastLeafs = new ArrayList<>();
         getLastLeafListRecursive(rootLeaf, lastLeafs);
 
         return lastLeafs;
     }
 
-    private void getLastLeafListRecursive(BspLeaf currenLeaf, List<Node> lastLeafs){
+    private void getLastLeafListRecursive(BspLeaf currenLeaf, List<BspLeaf> lastLeafs){
         if(currenLeaf.getLeftChild() == null && currenLeaf.getRightChild() == null){
             lastLeafs.add(currenLeaf);
             return;

@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,18 +15,18 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Node {
     Rectangle bound;
-    List<Node> connected = new ArrayList<>();
-    List<Edge> halls = new ArrayList<>();
+    List<Node> neighbours = new ArrayList<>();
+    List<Edge> connections = new ArrayList<>();
 
     public Node(Rectangle bound) {
         this.bound = bound;
     }
 
-    public Integer getCenterX() {
+    public Integer getBoundCenterX() {
         return bound.getX() + (bound.getWidth() / 2);
     }
 
-    public Integer getCenterY() {
+    public Integer getBoundCenterY() {
         return bound.getY() + (bound.getHeight() / 2);
     }
 
@@ -39,33 +38,19 @@ public class Node {
     }
 
     public Edge isOverlapingWithThreshold(Node other, Integer threshold) {
-        List<Edge> edges = getEdges();
-        List<Edge> otherEdges = other.getEdges();
+        List<Edge> edges = bound.getEdges();
+        List<Edge> otherEdges = other.getBound().getEdges();
         for (int i = 0; i < edges.size(); ++i) {
             for(int j = 0; j < otherEdges.size(); ++j){
-                Edge overlapingEdge = edges.get(i).isOverlaping(otherEdges.get(j), threshold);
+                Edge overlapingEdge = edges.get(i).getCollinearityIntersection(otherEdges.get(j), threshold);
                 if(overlapingEdge != null){
-                    Edge test = edges.get(i).isOverlaping(otherEdges.get(j), threshold);
-                    halls.add(overlapingEdge);
+                    Edge test = edges.get(i).getCollinearityIntersection(otherEdges.get(j), threshold);
+                    connections.add(overlapingEdge);
                     return overlapingEdge;
                 }
             }
         }
 
         return null;
-    }
-
-    public List<Edge> getEdges() {
-        List<Edge> edges = new ArrayList<>();
-        //левая
-        edges.add(new Edge(bound.getX(), bound.getY(), bound.getX(), bound.getY() + bound.getHeight()));
-        //нижняя
-        edges.add(new Edge(bound.getX(), bound.getY() + bound.getHeight(), bound.getX() + bound.getWidth(), bound.getY() + bound.getHeight()));
-        //правая
-        edges.add(new Edge(bound.getX() + bound.getWidth(), bound.getY(), bound.getX() + bound.getWidth(), bound.getY() + bound.getHeight()));
-        //верхняя
-        edges.add(new Edge(bound.getX(), bound.getY(), bound.getX() + bound.getWidth(), bound.getY()));
-
-        return edges;
     }
 }

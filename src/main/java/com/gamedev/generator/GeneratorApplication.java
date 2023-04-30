@@ -3,6 +3,7 @@ package com.gamedev.generator;
 import com.gamedev.generator.model.Edge;
 import com.gamedev.generator.model.MapGraph;
 import com.gamedev.generator.model.Node;
+import com.gamedev.generator.model.Room;
 import com.gamedev.generator.service.BspService;
 import com.gamedev.generator.service.MapGraphService;
 import com.gamedev.generator.util.BspUtil;
@@ -49,7 +50,7 @@ public class GeneratorApplication extends JFrame {
 
         for (int i = 0; i < map.getRooms().size(); ++i) {
 
-            Node room = map.getRooms().get(i);
+            Room room = (Room)map.getRooms().get(i);
 
             g2d.setStroke(new BasicStroke(1));
             g2d.setColor(new Color(0, 0, 0));
@@ -57,17 +58,17 @@ public class GeneratorApplication extends JFrame {
                     , room.getBound().getWidth() * scale, room.getBound().getHeight() * scale);
 
 
-            g2d.setColor(new Color(MathUtil.getRandIntInRange(0, 255), MathUtil.getRandIntInRange(0, 255), MathUtil.getRandIntInRange(0, 255)));
-            g2d.setStroke(new BasicStroke(3));
+            g2d.setColor(new Color(255,0,0));
+            g2d.setStroke(new BasicStroke(5));
             for (Edge hall : room.getHalls()) {
                 g2d.drawLine(hall.getX1() * scale, hall.getY1() * scale, hall.getX2() * scale, hall.getY2() * scale);
             }
 
-            g2d.setColor(new Color(255,0,0));
-            g2d.setStroke(new BasicStroke(2));
-            for (Node con : room.getConnected()) {
-                g2d.drawLine(room.getCenterX() * scale, room.getCenterY() * scale, con.getCenterX() * scale, con.getCenterY() * scale);
-            }
+//            g2d.setColor(new Color(255,0,0));
+//            g2d.setStroke(new BasicStroke(2));
+//            for (Node con : room.getConnected()) {
+//                g2d.drawLine(room.getCenterX() * scale, room.getCenterY() * scale, con.getCenterX() * scale, con.getCenterY() * scale);
+//            }
         }
     }
 

@@ -7,7 +7,7 @@ import lombok.Getter;
 
 public class BspLeaf extends Node {
 
-    private final Integer MIN_LEAF_SIZE = 15;
+    private final Integer MIN_LEAF_SIZE = 45;
 
     @Getter
     private BspLeaf leftChild;

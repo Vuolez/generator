@@ -21,7 +21,7 @@ public class NodeUtil {
 
 //                        Edge test = nodes.get(i).isOverlapingWithThreshold(nodes.get(j), 0);
 
-                        nodes.get(i).getConnected().add(nodes.get(j));
+                        nodes.get(i).getNeighbours().add(nodes.get(j));
                     }
                 }
             }

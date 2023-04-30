@@ -1,6 +1,5 @@
 package com.gamedev.generator.service;
 
-import com.gamedev.generator.model.Node;
 import com.gamedev.generator.model.bsp.BspLeaf;
 import com.gamedev.generator.util.BspUtil;
 import lombok.AccessLevel;
@@ -16,7 +15,7 @@ import java.util.List;
 public class BspService {
     BspUtil bspUtil;
 
-    public List<Node> createMap(Integer width, Integer height) {
+    public List<BspLeaf> createMap(Integer width, Integer height) {
         return bspUtil.getLastLeafs(bspUtil.createMap(width, height).getRootLeaf());
     }
 }
