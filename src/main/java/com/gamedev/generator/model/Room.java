@@ -15,17 +15,20 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Room extends Node {
 
-    static final int HALL_SIZE = 3;
+    static final int HALL_SIZE = 5;
     List<Edge> walls;
     List<Edge> halls;
 
-    public Room(Rectangle bound, Rectangle rectangle) {
+    public Room(Rectangle bound, Rectangle walls) {
         super(bound);
 
-        this.walls = rectangle.getEdges();
+        this.walls = walls.getEdges();
         this.halls = new ArrayList<>();
     }
 
+    public Room(Node node){
+        this(node.getBound(), node.getBound());
+    }
     public void calculateHalls(Graphics2D g2d) {
         for (Edge connection : getConnections()) {
             Edge edge = new Edge();
@@ -40,27 +43,35 @@ public class Room extends Node {
             }
             halls.add(edge);
 
-            g2d.setStroke(new BasicStroke(2));
-            g2d.setColor(new Color(255, 0, 0));
-            g2d.drawLine(connection.getX1() * 5, connection.getY1() * 5
-                    , connection.getX2() * 5, connection.getY2() * 5);
-
-            g2d.setColor(new Color(0, 139, 255));
-            g2d.drawLine(edge.getX1() * 5, edge.getY1() * 5
-                    , edge.getX2() * 5, edge.getY2() * 5);
-
-            System.out.println(connection);
+//            g2d.setStroke(new BasicStroke(2));
+//            g2d.setColor(new Color(255, 0, 0));
+//            g2d.drawLine(connection.getX1() * 5, connection.getY1() * 5
+//                    , connection.getX2() * 5, connection.getY2() * 5);
+//
+//            g2d.setColor(new Color(0, 139, 255));
+//            g2d.drawLine(edge.getX1() * 5, edge.getY1() * 5
+//                    , edge.getX2() * 5, edge.getY2() * 5);
+//
+//            System.out.println(connection);
         }
 
     }
 
     public void cutHalls() {
+        List<Edge> newWalls = new ArrayList<>();
         for (Edge wall : walls) {
-            for (Edge hall : getConnections()) {
-                if (wall.isCollinearityX(hall)) {
-
+            boolean haveCollinearHall = false;
+            for (Edge hall : getHalls()) {
+                if (wall.isCollinear(hall)) {
+                    newWalls.addAll(wall.subtract(hall));
+                    haveCollinearHall = true;
                 }
             }
+            if (!haveCollinearHall) {
+                newWalls.add(wall);
+            }
         }
+
+        walls = newWalls;
     }
 }

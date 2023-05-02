@@ -18,6 +18,6 @@ public class BspController {
 
     @GetMapping("/create")
     public void getStructCatalogRootList() {
-        bspService.createMap(100, 100);
+        bspService.createMap(300, 300);
     }
 }

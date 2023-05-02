@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Data
@@ -46,19 +48,52 @@ public class Edge {
         }
     }
 
-    public Edge getCollinearityIntersection(Edge other, Integer threshold) {
+    public static double[][] cutLineSegment1D(double[] line1, double[] line2) {
+        double[][] cutSegments = new double[2][2];
+        double[] intersectionPoints = findLineSegmentsIntersection1D(line1[0], line1[1], line2[0], line2[1]);
+        if (intersectionPoints == null) {
+            return null;
+        }
+
+        if (intersectionPoints.length == 0) {
+            // No intersection, return the original segments
+            cutSegments[0] = line1;
+            cutSegments[1] = line2;
+        } else {
+            // Cut the segments at the intersection point(s)
+            if (line1[0] < intersectionPoints[0]) {
+                cutSegments[0][0] = line1[0];
+                cutSegments[0][1] = intersectionPoints[0];
+            }
+            if (line1[1] > intersectionPoints[1]) {
+                cutSegments[1][0] = intersectionPoints[1];
+                cutSegments[1][1] = line1[1];
+            }
+            if (line2[0] < intersectionPoints[0]) {
+                cutSegments[1][0] = line2[0];
+                cutSegments[1][1] = intersectionPoints[0];
+            }
+            if (line2[1] > intersectionPoints[1]) {
+                cutSegments[0][0] = intersectionPoints[1];
+                cutSegments[0][1] = line2[1];
+            }
+        }
+        return cutSegments;
+    }
+
+    public Edge getCollinearIntersection(Edge other, Integer threshold) {
         if (this == other) {
             return null;
         }
 
         double[] points;
         Edge intersectionEdge = new Edge();
-        if (isCollinearityY(other)) {
+        if (isCollinearY(other)) {
             points = findLineSegmentsIntersection1D(x1, x2, other.x1, other.x2);
             if (points != null) {
                 intersectionEdge = new Edge((int) points[0], y1, (int) points[1], y2);
             }
-        } else if (isCollinearityX(other)) {
+        } else if (isCollinearX(other)) {
             points = findLineSegmentsIntersection1D(y1, y2, other.y1, other.y2);
             if (points != null) {
                 intersectionEdge = new Edge(x1, (int) points[0], x2, (int) points[1]);
@@ -72,11 +107,15 @@ public class Edge {
         return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
     }
 
-    public boolean isCollinearityX(Edge other) {
+    public boolean isCollinear(Edge other) {
+        return isCollinearX(other) || isCollinearY(other);
+    }
+
+    public boolean isCollinearX(Edge other) {
         return Objects.equals(x1, x2) && Objects.equals(other.x1, other.x2) && Objects.equals(x1, other.x1);
     }
 
-    public boolean isCollinearityY(Edge other) {
+    public boolean isCollinearY(Edge other) {
         return Objects.equals(y1, y2) && Objects.equals(other.y1, other.y2) && Objects.equals(y1, other.y1);
     }
 
@@ -86,5 +125,29 @@ public class Edge {
 
     public boolean isVertical() {
         return x1 == x2;
+    }
+
+    public List<Edge> subtract(Edge other) {
+        List<Edge> edges = new ArrayList<>();
+
+        double[][] edgesPoints = null;
+        if (isCollinearY(other)) {
+            edgesPoints = cutLineSegment1D(new double[]{x1, x2}, new double[]{other.x1, other.x2});
+            if (edgesPoints != null) {
+                for (double[] edgesPoint : edgesPoints) {
+                    edges.add(new Edge((int) edgesPoint[0], y1, (int) edgesPoint[1], y2));
+                }
+            }
+
+        } else if (isCollinearX(other)) {
+            edgesPoints = cutLineSegment1D(new double[]{y1, y2}, new double[]{other.y1, other.y2});
+            if (edgesPoints != null) {
+                for (double[] edgesPoint : edgesPoints) {
+                    edges.add(new Edge(x1, (int) edgesPoint[0], x2, (int) edgesPoint[1]));
+                }
+            }
+        }
+
+        return edges;
     }
 }

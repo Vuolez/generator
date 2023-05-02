@@ -2,12 +2,14 @@ package com.gamedev.generator.model.bsp;
 
 import com.gamedev.generator.model.Node;
 import com.gamedev.generator.model.Rectangle;
+import com.gamedev.generator.util.MathUtil;
 import lombok.Getter;
 
 
 public class BspLeaf extends Node {
 
-    private final Integer MIN_LEAF_SIZE = 45;
+    private final Integer MIN_LEAF_SIZE = 15;
+    private final double SPLIT_PERCENT = 1.25;
 
     @Getter
     private BspLeaf leftChild;
@@ -30,20 +32,20 @@ public class BspLeaf extends Node {
         // if the height is >25% larger than the width, we split horizontally
         // otherwise we split randomly
         boolean splitH = Math.random() > 0.5;
-        if (getBound().getWidth() > getBound().getHeight() && getBound().getWidth() / getBound().getHeight() >= 1.25) {
+        if (getBound().getWidth() > getBound().getHeight() && getBound().getWidth() / getBound().getHeight() >= SPLIT_PERCENT) {
             splitH = false;
-        } else if (getBound().getHeight() > getBound().getWidth() && getBound().getHeight() / getBound().getWidth() >= 1.25) {
+        } else if (getBound().getHeight() > getBound().getWidth() && getBound().getHeight() / getBound().getWidth() >= SPLIT_PERCENT) {
             splitH = true;
         }
 
         // Determine the maximum height or width for splitting
-        int max = (splitH ? getBound().getHeight() : getBound().getWidth()) - MIN_LEAF_SIZE;
+        int max = (splitH ? getBound().getHeight() : getBound().getWidth()) - MIN_LEAF_SIZE - MathUtil.getRandIntInRange(0,0);
         // If the area is too small to split any more, return false
         if (max <= MIN_LEAF_SIZE) {
             return false;
         }
         // Determine where to split
-        int split = (int) (Math.random() * (max - MIN_LEAF_SIZE)) + MIN_LEAF_SIZE;
+        int split = (int) (MathUtil.getRandDoubleInRange(0,1) * (max - MIN_LEAF_SIZE)) + MIN_LEAF_SIZE;
         // Create left and right child leaves based on the direction of the split
         if (splitH) {
             leftChild = new BspLeaf(new Rectangle(getBound().getX(), getBound().getY(), getBound().getWidth(), split));

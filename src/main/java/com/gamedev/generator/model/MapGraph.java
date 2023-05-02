@@ -11,7 +11,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MapGraph {
     List<Room> rooms = new ArrayList<>();
-
+    List<Node> debugNodes = new ArrayList<>();
     public void addRoom(Room room) {
         rooms.add(room);
     }

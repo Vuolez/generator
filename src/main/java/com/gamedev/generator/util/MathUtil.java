@@ -12,5 +12,8 @@ public class MathUtil {
         return (int) ((Math.random() * (max - min)) + min);
     }
 
+    public static double getRandDoubleInRange(double min, double max) {
+        return ((Math.random() * (max - min)) + min);
+    }
 
 }

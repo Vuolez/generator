@@ -3,7 +3,6 @@ package com.gamedev.generator.service;
 
 import com.gamedev.generator.model.MapGraph;
 import com.gamedev.generator.model.Node;
-import com.gamedev.generator.model.Rectangle;
 import com.gamedev.generator.model.Room;
 import com.gamedev.generator.model.bsp.BspLeaf;
 import com.gamedev.generator.util.MathUtil;
@@ -34,54 +33,101 @@ public class MapGraphService {
                 .map(Node.class::cast)
                 .toList();
 
+        int offset = 20;
         for (int i = 0; i < nodes.size(); ++i) {
             Node node = nodes.get(i);
 
             g2d.setStroke(new BasicStroke(1));
-            g2d.setColor(new Color(0, 0, 0));
-            g2d.drawRect(node.getBound().getX() * 5, node.getBound().getY() * 5
+            g2d.setColor(new Color(225, 225, 225, 255));
+            g2d.drawRect((node.getBound().getX() + offset) * 5, (node.getBound().getY() + offset) * 5
                     , node.getBound().getWidth() * 5, node.getBound().getHeight() * 5);
 
-            g2d.setStroke(new BasicStroke(2));
+            g2d.setStroke(new BasicStroke(1));
             g2d.setColor(new Color(0, 0, 0));
-            g2d.drawString(String.valueOf(i), node.getBoundCenterX() * 5, node.getBoundCenterY() * 5);
+            g2d.drawString(String.valueOf(i), (node.getBoundCenterX() + offset) * 5, (node.getBoundCenterY() + offset) * 5);
         }
 
-        nodeUtil.connectOverlappingNodes(nodes, g2d);
+        nodeUtil.connectNeighborhoodNodes(nodes);
 
-        map.setRooms(createRoomsByLeafList(leafs, g2d));
+        List<Node> playersNodes = findPlayersNodes(4, nodes, width, height);
+        for (int i = 0; i < playersNodes.size(); ++i) {
+            Node node = playersNodes.get(i);
+
+            g2d.setStroke(new BasicStroke(10));
+            g2d.setColor(new Color(255, 0, 234));
+            g2d.drawRect((node.getBound().getX() + offset) * 5, (node.getBound().getY() + offset) * 5
+                    , node.getBound().getWidth() * 5, node.getBound().getHeight() * 5);
+        }
+
+
+        List<Node> actualNodes = findPaths(playersNodes, nodes)
+                .stream()
+                .flatMap(List::stream)
+                .toList();
+
+        actualNodes = actualNodes.stream().peek(i -> i.getConnections().clear()).toList();
+        nodeUtil.connectNeighborhoodNodes(actualNodes);
+
+        map.setRooms(createRoomsByNodeList(actualNodes, g2d));
+
+        map.setDebugNodes(actualNodes);
 
         return map;
     }
 
-    private List<Room> createRoomsByLeafList(List<BspLeaf> leafs, Graphics2D g2d) {
+    private List<Node> findPlayersNodes(Integer playersCount, List<Node> allNodes, Integer width, Integer height) {
+        List<Node> playersNodes = new ArrayList<>();
+        if (playersCount < 2) {
+            return playersNodes;
+        }
+
+        List<Node> edgeMap = NodeUtil.findEdgeMapNodes(allNodes, new Point(width, height));
+        if (playersCount >= 2) {
+            playersNodes.add(edgeMap.get(0));
+            playersNodes.add(edgeMap.get(edgeMap.size() - 1));
+        }
+
+        if (playersCount == 4) {
+            Node nodeThird = NodeUtil.findMiddleNode(playersNodes.get(0), playersNodes.get(1), edgeMap);
+            playersNodes.add(nodeThird);
+
+            List<Node> path = NodeUtil.findFurthestNodePath(nodeThird, edgeMap);
+            playersNodes.add(path.get(path.size() - 1));
+        }
+
+        return playersNodes;
+    }
+
+    private List<List<Node>> findPaths(List<Node> playerNodes, List<Node> allNodes) {
+        List<List<Node>> paths = new ArrayList<>();
+        if (playerNodes.size() % 2 != 0) {
+            return paths;
+        }
+
+        for (int i = 0; i + 1 < playerNodes.size(); i += 2) {
+            paths.add(NodeUtil.findShortestPath(playerNodes.get(i), playerNodes.get(i + 1), allNodes));
+        }
+
+        return paths;
+    }
+
+    private List<Room> createRoomsByNodeList(List<Node> nodes, Graphics2D g2d) {
         List<Room> rooms = new ArrayList<>();
-        for (int i = 0 ; i < leafs.size(); ++i) {
-            rooms.add(createRoomByLeaf(leafs.get(i), g2d));
+
+        for (int i = 0; i < nodes.size(); ++i) {
+            rooms.add(createRoomByLeaf(nodes.get(i), g2d));
         }
 
         return rooms;
     }
 
-    private Room createRoomByLeaf(BspLeaf leaf, Graphics2D g2d) {
+    private Room createRoomByLeaf(Node node, Graphics2D g2d) {
+        Room room = new Room(node);
 
-        // Создание комнаты в текущем листе
-        Point roomSize;
-        Point roomPos;
-
-        // Размер комнаты может быть от 3x3 до размеров листа минус 2
-        roomSize = new Point(MathUtil.getRandIntInRange((leaf.getBound().getWidth() - ROOM_WIDTH_RANGE), leaf.getBound().getWidth())
-                , MathUtil.getRandIntInRange((leaf.getBound().getHeight() - ROOM_HEIGHT_RANGE), leaf.getBound().getHeight()));
-
-        // Расположение комнаты внутри листа
-        roomPos = new Point(MathUtil.getRandIntInRange(0, (leaf.getBound().getWidth() - roomSize.x))
-                , MathUtil.getRandIntInRange(0, (leaf.getBound().getHeight() - roomSize.y)));
-        Room room = new Room(new Rectangle(leaf.getBound().getX(), leaf.getBound().getY(), leaf.getBound().getWidth(), leaf.getBound().getHeight())
-                , new Rectangle(leaf.getBound().getX() + roomPos.x, leaf.getBound().getY() + roomPos.y, roomSize.x, roomSize.y));
-
-        room.setNeighbours(leaf.getNeighbours());
-        room.setConnections(leaf.getConnections());
+        room.setNeighbours(node.getNeighbours());
+        room.setConnections(node.getConnections());
         room.calculateHalls(g2d);
+//        room.cutHalls();
 
         return room;
     }

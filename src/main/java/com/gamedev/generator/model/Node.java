@@ -42,9 +42,8 @@ public class Node {
         List<Edge> otherEdges = other.getBound().getEdges();
         for (int i = 0; i < edges.size(); ++i) {
             for(int j = 0; j < otherEdges.size(); ++j){
-                Edge overlapingEdge = edges.get(i).getCollinearityIntersection(otherEdges.get(j), threshold);
+                Edge overlapingEdge = edges.get(i).getCollinearIntersection(otherEdges.get(j), threshold);
                 if(overlapingEdge != null){
-                    Edge test = edges.get(i).getCollinearityIntersection(otherEdges.get(j), threshold);
                     connections.add(overlapingEdge);
                     return overlapingEdge;
                 }
@@ -52,5 +51,11 @@ public class Node {
         }
 
         return null;
+    }
+
+    @Override
+    public String toString() {
+        String var10000 = String.valueOf(this.getBound());
+        return "Node(bound=" + var10000;
     }
 }
