@@ -1,8 +1,10 @@
 package com.gamedev.generator.model;
 
+import com.gamedev.generator.util.EdgeUtil;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.awt.*;
@@ -12,12 +14,13 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Room extends Node {
 
     static final int HALL_SIZE = 5;
-    List<Edge> walls;
-    List<Edge> halls;
+    List<Edge> walls = new ArrayList<>();
+    List<Edge> halls = new ArrayList<>();
 
     public Room(Rectangle bound, Rectangle walls) {
         super(bound);
@@ -26,9 +29,22 @@ public class Room extends Node {
         this.halls = new ArrayList<>();
     }
 
+    public Room(Rectangle rectangle){
+        this(rectangle, rectangle);
+    }
+
     public Room(Node node){
         this(node.getBound(), node.getBound());
     }
+
+    public Room(Room room){
+        setBound(room.getBound());
+        setNeighbours(getNeighbours());
+        setConnections(getConnections());
+        room.getWalls().stream().forEach(i -> walls.add(new Edge(i)));
+        room.getHalls().stream().forEach(i -> halls.add(new Edge(i)));
+    }
+
     public void calculateHalls(Graphics2D g2d) {
         for (Edge connection : getConnections()) {
             Edge edge = new Edge();
@@ -57,21 +73,25 @@ public class Room extends Node {
 
     }
 
-    public void cutHalls() {
-        List<Edge> newWalls = new ArrayList<>();
-        for (Edge wall : walls) {
-            boolean haveCollinearHall = false;
-            for (Edge hall : getHalls()) {
-                if (wall.isCollinear(hall)) {
-                    newWalls.addAll(wall.subtract(hall));
-                    haveCollinearHall = true;
-                }
-            }
-            if (!haveCollinearHall) {
-                newWalls.add(wall);
-            }
-        }
+//    public void cutHalls() {
+//        List<Edge> newWalls = new ArrayList<>();
+//        for (Edge wall : walls) {
+//            boolean haveCollinearHall = false;
+//            for (Edge hall : getHalls()) {
+//                if (wall.isCollinear(hall)) {
+//                    newWalls.addAll(EdgeUtil.findSubtractEdges(wall, hall));
+//                    haveCollinearHall = true;
+//                }
+//            }
+//            if (!haveCollinearHall) {
+//                newWalls.add(wall);
+//            }
+//        }
+//
+//        walls = newWalls;
+//    }
 
-        walls = newWalls;
+    public void addWall(Edge edge1) {
+        walls.add(edge1);
     }
 }

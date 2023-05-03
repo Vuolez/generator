@@ -2,7 +2,6 @@ package com.gamedev.generator;
 
 import com.gamedev.generator.model.Edge;
 import com.gamedev.generator.model.MapGraph;
-import com.gamedev.generator.model.Node;
 import com.gamedev.generator.model.Room;
 import com.gamedev.generator.service.BspService;
 import com.gamedev.generator.service.MapGraphService;
@@ -18,6 +17,8 @@ public class GeneratorApplication extends JFrame {
 
     final static int scale = 5;
     final static int map_size = 150;
+
+    final static int offsetX = 20;
     public GeneratorApplication() {
         super("Rectangles Drawing Demo");
 
@@ -56,19 +57,18 @@ public class GeneratorApplication extends JFrame {
 //            g2d.drawRect(room.getBound().getX() * scale, room.getBound().getY() * scale
 //                    , room.getBound().getWidth() * scale, room.getBound().getHeight() * scale);
 
-            int offset = 20;
             g2d.setStroke(new BasicStroke(4));
             g2d.setColor(new Color(0, 119, 255));
             for(Edge wall : room.getWalls()){
-                g2d.drawLine((wall.getX1() + offset) * scale, (wall.getY1() + offset) * scale
-                        , (wall.getX2() + offset)* scale, (wall.getY2() + offset) * scale);
+                g2d.drawLine((wall.getX1() + offsetX) * scale, (wall.getY1() + offsetX) * scale
+                        , (wall.getX2() + offsetX)* scale, (wall.getY2() + offsetX) * scale);
             }
 
             g2d.setStroke(new BasicStroke(4));
             g2d.setColor(new Color(255, 255, 255));
             for(Edge wall : room.getHalls()){
-                g2d.drawLine((wall.getX1() + offset) * scale, (wall.getY1() + offset) * scale
-                        , (wall.getX2() + offset)* scale, (wall.getY2() + offset) * scale);
+                g2d.drawLine((wall.getX1() + offsetX) * scale, (wall.getY1() + offsetX) * scale
+                        , (wall.getX2() + offsetX)* scale, (wall.getY2() + offsetX) * scale);
             }
 
 //            g2d.setStroke(new BasicStroke(2));

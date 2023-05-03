@@ -127,27 +127,7 @@ public class Edge {
         return x1 == x2;
     }
 
-    public List<Edge> subtract(Edge other) {
-        List<Edge> edges = new ArrayList<>();
-
-        double[][] edgesPoints = null;
-        if (isCollinearY(other)) {
-            edgesPoints = cutLineSegment1D(new double[]{x1, x2}, new double[]{other.x1, other.x2});
-            if (edgesPoints != null) {
-                for (double[] edgesPoint : edgesPoints) {
-                    edges.add(new Edge((int) edgesPoint[0], y1, (int) edgesPoint[1], y2));
-                }
-            }
-
-        } else if (isCollinearX(other)) {
-            edgesPoints = cutLineSegment1D(new double[]{y1, y2}, new double[]{other.y1, other.y2});
-            if (edgesPoints != null) {
-                for (double[] edgesPoint : edgesPoints) {
-                    edges.add(new Edge(x1, (int) edgesPoint[0], x2, (int) edgesPoint[1]));
-                }
-            }
-        }
-
-        return edges;
+    public boolean isZero() {
+        return x1 == 0 && x2 == 0 && y1 == 0 && y2 == 0;
     }
 }
