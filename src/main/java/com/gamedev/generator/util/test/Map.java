@@ -1,5 +1,7 @@
 package com.gamedev.generator.util.test;
 
+import ch.qos.logback.core.joran.sanity.Pair;
+import com.gamedev.generator.util.MathUtil;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
@@ -34,15 +36,15 @@ public class Map {
         rooms.add(room);
 
         vertexes = new ArrayList<>();
-        vertexes.add(new Vertex(11 , 25));
-        vertexes.add(new Vertex(11 , 35));
-        vertexes.add(new Vertex(21 , 35));
-        vertexes.add(new Vertex(21 , 25));
+        vertexes.add(new Vertex(11, 25));
+        vertexes.add(new Vertex(11, 35));
+        vertexes.add(new Vertex(21, 35));
+        vertexes.add(new Vertex(21, 25));
         room = new Room(vertexes);
         rooms.add(room);
 
 
-        g2d.setStroke(new BasicStroke(1));
+        g2d.setStroke(new BasicStroke(3));
         int scale = 5;
         int offset = 20;
         for (int i = 1; i < rooms.size(); ++i) {
@@ -50,13 +52,14 @@ public class Map {
             g2d.fillRect(-100, -100, 1000, 1000);
             for (Room r : rooms) {
                 for (Edge edge : r.getEdges()) {
-                    g2d.setColor(new Color(0, 0, 0));
-                    g2d.drawLine((edge.getV1().getX() + offset) * scale, (edge.getV1().getY() + offset) * scale
-                            , (edge.getV2().getX() + offset) * scale, (edge.getV2().getY() + offset) * scale);
+                    if (edge.length() > 0) {
+                        g2d.setColor(new Color(0, 0, 0));
+                        g2d.drawLine((edge.getV1().getX() + offset) * scale, (edge.getV1().getY() + offset) * scale
+                                , (edge.getV2().getX() + offset) * scale, (edge.getV2().getY() + offset) * scale);
+                    }
                 }
             }
         }
-
 
 
         prepareUncheckedEdges();
@@ -68,11 +71,13 @@ public class Map {
                 g2d.fillRect(-100, -100, 1000, 1000);
                 for (Room r : rooms) {
                     for (Edge edge : r.getEdges()) {
-                        g2d.setColor(new Color(0, 0, 0));
+                        g2d.setColor(new Color(MathUtil.getRandIntInRange(50,150), MathUtil.getRandIntInRange(50,150), MathUtil.getRandIntInRange(50,150)));
                         g2d.drawLine((edge.getV1().getX() + offset) * scale, (edge.getV1().getY() + offset) * scale
                                 , (edge.getV2().getX() + offset) * scale, (edge.getV2().getY() + offset) * scale);
                     }
                 }
+
+                System.out.println("s");
             }
         }
     }
@@ -103,7 +108,7 @@ public class Map {
     }
 
     private void removePotentialGrowthEdge(Room room, Edge edge) {
-        if(!potentialGrowthEdges.get(room.getId()).contains(edge)){
+        if (!potentialGrowthEdges.get(room.getId()).contains(edge)) {
             return;
         }
 
@@ -116,23 +121,27 @@ public class Map {
     }
 
     private boolean canEdgeGrow(Edge edge, Room room) {
-        Edge edgeCopy = new Edge(edge);
-        edgeCopy.getV1().add(new Vertex(edgeCopy.getNormal().getX(), edgeCopy.getNormal().getY()));
-        edgeCopy.getV2().add(new Vertex(edgeCopy.getNormal().getX(), edgeCopy.getNormal().getY()));
+        edge.getV1().add(new Vertex(edge.getNormal().getX(), edge.getNormal().getY()));
+        edge.getV2().add(new Vertex(edge.getNormal().getX(), edge.getNormal().getY()));
 
         for (Room otherRoom : rooms) {
             if (otherRoom != room) {
                 for (Edge otherEdge : otherRoom.getEdges()) {
-                    if (otherEdge.equals(edgeCopy)) continue;
-                    if (edgeCopy.getCollinearIntersection(otherEdge) != null) {
-                        List<Edge> subtractEdges = EdgeUtil.findSubtractEdges(edgeCopy, otherEdge);
+                    if (otherEdge.equals(edge)) continue;
+                    if (edge.getCollinearIntersection(otherEdge) != null) {
+                        List<Edge> subtractEdges = EdgeUtil.findSubtractEdges(edge, otherEdge);
                         if (subtractEdges != null) {
-                            for(Edge subtractEdge : subtractEdges){
-                                subtractEdge.getV1().add(new Vertex(-edgeCopy.getNormal().getX(), -edgeCopy.getNormal().getY()));
-                                subtractEdge.getV2().add(new Vertex(-edgeCopy.getNormal().getX(), -edgeCopy.getNormal().getY()));
+                            for (Edge subtractEdge : subtractEdges) {
+                                subtractEdge.getV1().add(new Vertex(-edge.getNormal().getX(), -edge.getNormal().getY()));
+                                subtractEdge.getV2().add(new Vertex(-edge.getNormal().getX(), -edge.getNormal().getY()));
                                 subtractEdge.setNormal(edge.getNormal());
                             }
+                            subtractEdges = connectVertexes(subtractEdges);
                             replaceOldEdge(room, edge, subtractEdges);
+                        }
+                        else{
+                            edge.getV1().add(new Vertex(-edge.getNormal().getX(), -edge.getNormal().getY()));
+                            edge.getV2().add(new Vertex(-edge.getNormal().getX(), -edge.getNormal().getY()));
                         }
                         return false;
                     }
@@ -140,7 +149,30 @@ public class Map {
             }
         }
 
+        edge.getV1().add(new Vertex(-edge.getNormal().getX(), -edge.getNormal().getY()));
+        edge.getV2().add(new Vertex(-edge.getNormal().getX(), -edge.getNormal().getY()));
         return true;
+    }
+
+    private List<Edge> connectVertexes(List<Edge> edges) {
+
+        List<Vertex> vertexes = new ArrayList<>();
+        for (Edge edge : edges) {
+            vertexes.add(edge.getV1());
+            vertexes.add(edge.getV2());
+        }
+
+        List<Edge> newEdges = new ArrayList<>(edges);
+        for (int i = 0; i < vertexes.size(); ++i) {
+            for (int j = i + 1; j < vertexes.size(); j++) {
+                if (vertexes.get(i).getX() == vertexes.get(j).getX()
+                        && vertexes.get(i).getY() == vertexes.get(j).getY()) {
+                    newEdges.add(new Edge(vertexes.get(i), vertexes.get(j)));
+                }
+            }
+        }
+
+        return newEdges;
     }
 
     private void replaceOldEdge(Room room, Edge edge, List<Edge> newEdges) {

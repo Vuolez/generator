@@ -37,14 +37,14 @@ public class EdgeUtil {
     //Если edge2 > edge1 вернет пустой список
     //Если edge2 == edge1 вернет пустой список
     public static List<Edge> findSubtractEdges(Edge edge1, Edge edge2) {
-        if(edge1.vertexesEquals(edge2)){
+        if (edge1.vertexesEquals(edge2)) {
             return null;
         }
 
         List<Edge> edges = new ArrayList<>();
         int[] edgesPoint;
         if (edge1.isCollinearY(edge2)) {
-            if(edge2.getV1().getX() < edge1.getV1().getX() && edge2.getV2().getX() > edge1.getV2().getX()){
+            if (edge2.getV1().getX() < edge1.getV1().getX() && edge2.getV2().getX() > edge1.getV2().getX()) {
                 return null;
             }
 
@@ -53,10 +53,12 @@ public class EdgeUtil {
 
             if (edgesPoint != null) {
                 if (edge1.getV1().getX() < edgesPoint[0]) {
+                    edgesPoint[0] -= 1;
                     edges.add(new Edge(new Vertex(edge1.getV1().getX(), edge1.getV1().getY())
                             , new Vertex(edgesPoint[0], edge1.getV2().getY())));
                 }
                 if (edge1.getV2().getX() > edgesPoint[1]) {
+                    edgesPoint[1] += 1;
                     edges.add(new Edge(new Vertex(edgesPoint[1], edge1.getV2().getY())
                             , new Vertex(edge1.getV2().getX(), edge1.getV2().getY())));
                 }
@@ -66,7 +68,7 @@ public class EdgeUtil {
             }
 
         } else if (edge1.isCollinearX(edge2)) {
-            if(edge2.getV1().getY() < edge1.getV1().getY() && edge2.getV2().getY() > edge1.getV2().getY()){
+            if (edge2.getV1().getY() < edge1.getV1().getY() && edge2.getV2().getY() > edge1.getV2().getY()) {
                 return null;
             }
 
@@ -74,17 +76,30 @@ public class EdgeUtil {
                     , edge2.getV1().getY(), edge2.getV2().getY());
 
             if (edgesPoint != null) {
-                if(edge1.getV1().getY() < edgesPoint[0]){
-                    edges.add(new Edge( new Vertex(edge1.getV1().getX(), edge1.getV1().getY())
-                            , new Vertex(edge1.getV2().getX(), edgesPoint[0])));
+                Vertex iV1 = new Vertex(edge1.getV1().getX(), edgesPoint[0]);
+                Vertex iV2 = new Vertex(edge1.getV1().getX(), edgesPoint[1]);
+
+                Edge iEdge = new Edge();
+                iEdge.setV1(edge1.getV1());
+                iEdge.setV2(edge1.getV2());
+                iEdge.setNormal(edge1.getNormal());
+
+                if (edge1.getV1().getY() < edgesPoint[0]) {
+                    iV1.setY(iV1.getY() - 1);
+                    Vertex v1 = edge1.getV1();
+                    Vertex v2 = new Vertex(edge1.getV2().getX(), iV1.getY());
+                    edges.add(new Edge(v1, v2, edge1.getNormal()));
+                    iEdge.setV1(iV1);
                 }
-                if(edge1.getV2().getY() > edgesPoint[1]){
-                    edges.add(new Edge( new Vertex(edge1.getV2().getX(), edgesPoint[1])
-                            , new Vertex(edge1.getV2().getX(), edge1.getV2().getY())));
+                if (edge1.getV2().getY() > edgesPoint[1]) {
+                    iV2.setY(iV2.getY() + 1);
+                    Vertex v1 = new Vertex(edge1.getV2().getX(), iV2.getY());
+                    Vertex v2 = edge1.getV2();
+                    edges.add(new Edge(v1,v2, edge1.getNormal()));
+                    iEdge.setV2(iV2);
                 }
 
-                edges.add(new Edge( new Vertex(edge1.getV1().getX(), edgesPoint[0])
-                        ,new Vertex(edge1.getV1().getX(), edgesPoint[1])));
+                edges.add(iEdge);
             }
         }
 
@@ -92,5 +107,4 @@ public class EdgeUtil {
         edges = edges.stream().filter(i -> !i.isZero()).toList();
         return edges;
     }
-
 }

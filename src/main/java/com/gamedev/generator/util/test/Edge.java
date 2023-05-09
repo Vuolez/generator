@@ -12,6 +12,7 @@ import java.util.Objects;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class Edge implements Cloneable{
     Vertex v1, v2;
     Normal normal;
@@ -129,5 +130,15 @@ public class Edge implements Cloneable{
         } catch (CloneNotSupportedException e) {
             throw new AssertionError();
         }
+    }
+
+    public void setV1(Vertex v1){
+        this.v1 = v1;
+        calculateRightDirection();
+    }
+
+    public void setV2(Vertex v2){
+        this.v2 = v2;
+        calculateRightDirection();
     }
 }
