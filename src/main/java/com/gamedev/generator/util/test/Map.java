@@ -43,6 +43,14 @@ public class Map {
         room = new Room(vertexes);
         rooms.add(room);
 
+        vertexes = new ArrayList<>();
+        vertexes.add(new Vertex(31, 5));
+        vertexes.add(new Vertex(31, 15));
+        vertexes.add(new Vertex(41, 15));
+        vertexes.add(new Vertex(41, 5));
+        room = new Room(vertexes);
+        rooms.add(room);
+
 
         g2d.setStroke(new BasicStroke(3));
         int scale = 5;
@@ -100,6 +108,7 @@ public class Map {
         for (int i = 0; i < GROW_STEPS; ++i) {
             if (canEdgeGrow(edge, room)) {
                 growEdgeStep(edge);
+                room.getEdges().forEach(Edge::calculateRightDirection);
             } else {
                 removePotentialGrowthEdge(room, edge);
                 return;

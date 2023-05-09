@@ -16,7 +16,7 @@ public class EdgeUtil {
         double max1 = Math.max(a1, a2);
         double min2 = Math.min(b1, b2);
         double max2 = Math.max(b1, b2);
-        if (max1 < min2 || max2 < min1 || max1 == min2 || max2 == min1) {
+        if (max1 < min2 || max2 < min1 /*|| max1 == min2 || max2 == min1 */) {
             // No intersection
             return null;
         } else {
@@ -52,19 +52,30 @@ public class EdgeUtil {
                     , edge2.getV1().getX(), edge2.getV2().getX());
 
             if (edgesPoint != null) {
+                Vertex iV1 = new Vertex(edgesPoint[0], edge1.getV1().getY());
+                Vertex iV2 = new Vertex(edgesPoint[1], edge1.getV1().getY());
+
+                Edge iEdge = new Edge();
+                iEdge.setV1(edge1.getV1());
+                iEdge.setV2(edge1.getV2());
+                iEdge.setNormal(edge1.getNormal());
+
                 if (edge1.getV1().getX() < edgesPoint[0]) {
-                    edgesPoint[0] -= 1;
-                    edges.add(new Edge(new Vertex(edge1.getV1().getX(), edge1.getV1().getY())
-                            , new Vertex(edgesPoint[0], edge1.getV2().getY())));
+                    iV1.setX(iV1.getX() - 1);
+                    Vertex v1 = edge1.getV1();
+                    Vertex v2 = new Vertex(iV1.getX(), edge1.getV2().getY());
+                    edges.add(new Edge(v1, v2, edge1.getNormal()));
+                    iEdge.setV1(iV1);
                 }
                 if (edge1.getV2().getX() > edgesPoint[1]) {
-                    edgesPoint[1] += 1;
-                    edges.add(new Edge(new Vertex(edgesPoint[1], edge1.getV2().getY())
-                            , new Vertex(edge1.getV2().getX(), edge1.getV2().getY())));
+                    iV2.setX(iV2.getX() + 1);
+                    Vertex v1 = new Vertex(iV2.getX(), edge1.getV2().getY());
+                    Vertex v2 = edge1.getV2();
+                    edges.add(new Edge(v1,v2, edge1.getNormal()));
+                    iEdge.setV2(iV2);
                 }
 
-                edges.add(new Edge(new Vertex(edgesPoint[0], edge1.getV1().getY())
-                        , new Vertex(edgesPoint[1], edge1.getV1().getY())));
+                edges.add(iEdge);
             }
 
         } else if (edge1.isCollinearX(edge2)) {

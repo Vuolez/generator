@@ -71,7 +71,7 @@ public class Edge implements Cloneable{
             }
         }
 
-        return intersectionEdge.length() > 0 ? intersectionEdge : null;
+        return intersectionEdge.isZero() ? null : intersectionEdge;
     }
 
     public boolean isCollinearX(Edge other) {
@@ -98,7 +98,7 @@ public class Edge implements Cloneable{
         return getV1().getX() == 0 && getV2().getX() == 0 && v1.getY() == 0 && getV2().getY() == 0;
     }
 
-    private void calculateRightDirection() {
+    public void calculateRightDirection() {
         if(isHorizontal()){
             if(v1.getX() > v2.getX()){
                 Vertex temp = v1;
