@@ -1,5 +1,6 @@
 package com.gamedev.generator.model;
 
+import com.gamedev.generator.util.test.Vertex;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -80,6 +81,15 @@ public class Edge {
         }
         return cutSegments;
     }
+
+
+    public static int[] getIntersectionLine(int x1, int x2, int x3, int x4) {
+        // определяем начальную и конечную точки линии пересечения
+        int start = Math.max(x1, x3);
+        int end = Math.min(x2, x4);
+        return new int[]{start, end};
+    }
+
 
     public Edge getCollinearIntersection(Edge other, Integer threshold) {
         if (this == other) {
