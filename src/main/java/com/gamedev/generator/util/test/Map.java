@@ -130,6 +130,7 @@ public class Map {
                             for(Edge subtractEdge : subtractEdges){
                                 subtractEdge.getV1().add(new Vertex(-edgeCopy.getNormal().getX(), -edgeCopy.getNormal().getY()));
                                 subtractEdge.getV2().add(new Vertex(-edgeCopy.getNormal().getX(), -edgeCopy.getNormal().getY()));
+                                subtractEdge.setNormal(edge.getNormal());
                             }
                             replaceOldEdge(room, edge, subtractEdges);
                         }
@@ -147,7 +148,8 @@ public class Map {
         edges.remove(edge);
         edges.addAll(newEdges);
 
-        room.setEdges(edges);
+        room.getEdges().remove(edge);
+        room.getEdges().addAll(newEdges);
     }
 
     private void growEdgeStep(Edge edge) {

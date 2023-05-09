@@ -50,9 +50,6 @@ public class GeneratorApplication extends JFrame {
         map.create(2, g2d);
 
 
-
-
-
 //
 //        MapGraphService mapGraphService = new MapGraphService(new BspService(new BspUtil()), new NodeUtil());
 //
