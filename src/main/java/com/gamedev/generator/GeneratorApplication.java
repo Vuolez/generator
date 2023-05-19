@@ -6,11 +6,13 @@ import com.gamedev.generator.service.MapGraphService;
 import com.gamedev.generator.util.BspUtil;
 import com.gamedev.generator.util.NodeUtil;
 import com.gamedev.generator.util.test.Edge;
+import com.gamedev.generator.util.test.Layout;
 import com.gamedev.generator.util.test.Map;
 import com.gamedev.generator.util.test.Room;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
@@ -46,8 +48,8 @@ public class GeneratorApplication extends JFrame {
         Graphics2D g2d = (Graphics2D) g;
         int offset = 20;
 
-        Map map = new Map();
-        map.create(2, g2d);
+        Map map = new Map(g2d);
+        map.create(2);
 
 
 //

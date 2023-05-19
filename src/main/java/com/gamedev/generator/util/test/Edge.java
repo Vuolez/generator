@@ -74,6 +74,11 @@ public class Edge implements Cloneable{
         return intersectionEdge.isZero() ? null : intersectionEdge;
     }
 
+
+    public boolean isCollinear(Edge e2) {
+        return isCollinearX(e2) || isCollinearY(e2);
+    }
+
     public boolean isCollinearX(Edge other) {
         return Objects.equals(v1.getX(), v2.getX())
                 && Objects.equals(other.getV1().getX(), other.getV2().getX())

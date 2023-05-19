@@ -23,6 +23,13 @@ public class Room {
         calculateEdges();
     }
 
+    public Room(Room room) {
+        id = ID_COUNTER++;
+
+        this.vertexes = room.getVertexes().stream().map(Vertex::new).toList();
+        calculateEdges();
+    }
+
     private void calculateEdges() {
         for (int i = 0; i + 1 < vertexes.size(); ++i){
             edges.add(new Edge(vertexes.get(i), vertexes.get(i + 1)));

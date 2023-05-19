@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-import static com.gamedev.generator.model.Edge.cutLineSegment1D;
 import static com.gamedev.generator.model.Edge.getIntersectionLine;
 
 public class EdgeUtil {
@@ -60,6 +59,7 @@ public class EdgeUtil {
                 iEdge.setV2(edge1.getV2());
                 iEdge.setNormal(edge1.getNormal());
 
+
                 if (edge1.getV1().getX() < edgesPoint[0]) {
                     iV1.setX(iV1.getX() - 1);
                     Vertex v1 = edge1.getV1();
@@ -71,7 +71,7 @@ public class EdgeUtil {
                     iV2.setX(iV2.getX() + 1);
                     Vertex v1 = new Vertex(iV2.getX(), edge1.getV2().getY());
                     Vertex v2 = edge1.getV2();
-                    edges.add(new Edge(v1,v2, edge1.getNormal()));
+                    edges.add(new Edge(v1, v2, edge1.getNormal()));
                     iEdge.setV2(iV2);
                 }
 
@@ -95,6 +95,13 @@ public class EdgeUtil {
                 iEdge.setV2(edge1.getV2());
                 iEdge.setNormal(edge1.getNormal());
 
+                if(!iEdge.isVertical() && !iEdge.isHorizontal()){
+                    System.out.println("");
+                    iEdge.setV1(edge1.getV1());
+                    iEdge.setV2(edge1.getV2());
+                    iEdge.setNormal(edge1.getNormal());
+                }
+
                 if (edge1.getV1().getY() < edgesPoint[0]) {
                     iV1.setY(iV1.getY() - 1);
                     Vertex v1 = edge1.getV1();
@@ -106,7 +113,7 @@ public class EdgeUtil {
                     iV2.setY(iV2.getY() + 1);
                     Vertex v1 = new Vertex(edge1.getV2().getX(), iV2.getY());
                     Vertex v2 = edge1.getV2();
-                    edges.add(new Edge(v1,v2, edge1.getNormal()));
+                    edges.add(new Edge(v1, v2, edge1.getNormal()));
                     iEdge.setV2(iV2);
                 }
 
@@ -114,8 +121,94 @@ public class EdgeUtil {
             }
         }
 
-
         edges = edges.stream().filter(i -> !i.isZero()).toList();
         return edges;
+    }
+
+
+    /*
+     * Находит в переданном списке ребро которое содержит переданный вертекс
+     * @param vertex вертекс который должно содержать ребро
+     * @param edges список ребер в которых следует найти вертекс
+     * @return ребро содержащее переданный вертекс
+     */
+    public static Edge findEdgeByVertex(Vertex vertex, List<Edge> edges) {
+        for (Edge edge : edges) {
+            if (edge.getV1() == vertex || edge.getV2() == vertex) {
+                return edge;
+            }
+        }
+
+        return null;
+    }
+
+    /*
+     * Находит в переданном списке ребра которые содержат переданный вертекс
+     * @param vertex вертекс который должно содержать ребро
+     * @param edges список ребер в которых следует найти вертекс
+     * @return ребра содержащие переданный вертекс
+     */
+    public static List<Edge> findEdgesByVertex(Vertex vertex, List<Edge> edges) {
+        List<Edge> output = new ArrayList<>();
+
+        for (Edge edge : edges) {
+            if (edge.getV1() == vertex || edge.getV2() == vertex) {
+                output.add(edge);
+            }
+        }
+
+        return output;
+    }
+
+    public static void calculateNormal(Edge edge, List<Edge> edges) {
+        Normal normal = new Normal(0, 0);
+
+        Edge e1 = findEdgeByVertex(edge.getV1(), edges);
+        Edge e2 = findEdgeByVertex(edge.getV2(), edges);
+
+        //Если линии вертикальны
+        if (e1.isVertical() && e2.isVertical()) {
+            //Если у обоих линий нормали направленны вправо
+            if (e1.getNormal().getX() == 1 && e2.getNormal().getX() == 1) {
+                //Здесь неважно какую точку мы сраниваем первую или вторую
+                if (e1.getV1().getX() < e2.getV1().getX()) {
+                    normal.setY(1);
+                } else if (e1.getV1().getX() > e2.getV1().getX()) {
+                    normal.setY(-1);
+                }
+            }
+            //Если у обоих линий нормали направленны влево
+            else if (e1.getNormal().getX() == -1 && e2.getNormal().getX() == -1) {
+                //Здесь неважно какую точку мы сраниваем первую или вторую
+                if (e1.getV1().getX() < e2.getV1().getX()) {
+                    normal.setY(-1);
+                } else if (e1.getV1().getX() > e2.getV1().getX()) {
+                    normal.setY(1);
+                }
+            }
+        }
+        //Если линии горизонтальны
+        else if (e1.isHorizontal() && e2.isHorizontal()) {
+            //Если у обоих линий нормали направленны вверх
+            if (e1.getNormal().getY() == 1 && e2.getNormal().getY() == 1) {
+                //Здесь неважно какую точку мы сраниваем первую или вторую
+                if (e1.getV1().getY() < e2.getV1().getY()) {
+                    normal.setX(-1);
+                } else if (e1.getV1().getY() > e2.getV1().getY()) {
+                    normal.setX(1);
+                }
+            }
+            //Если у обоих линий нормали направленны вниз
+            else if (e1.getNormal().getY() == 1 && e2.getNormal().getY() == 1) {
+                //Здесь неважно какую точку мы сраниваем первую или вторую
+                if (e1.getV1().getY() < e2.getV1().getY()) {
+                    normal.setX(1);
+                } else if (e1.getV1().getY() > e2.getV1().getY()) {
+                    normal.setX(-1);
+                }
+            }
+        }
+
+        edge.setNormal(normal);
     }
 }
